@@ -148,6 +148,23 @@ html[lang="en"] .card .num { font-family: var(--font-latin); font-weight: 800; }
   font: inherit; color: var(--fg); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 14px; min-height: 48px; width: 100%;
 }
 .field input:focus, .field select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+
+.two-col { display: grid; grid-template-columns: 1fr 110px; gap: 12px; }
+.two-col .field { min-width: 0; }
+.field textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 14px; width: 100%; resize: vertical; min-height: 88px; }
+.field textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+fieldset.field { border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
+fieldset.field legend { font-weight: 600; font-size: 0.95rem; padding: 0; margin-bottom: 8px; }
+.opt { color: var(--muted); font-weight: 400; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 18px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); color: var(--fg); font-weight: 600; }
+.chip input:checked + span { background: var(--ink); color: var(--ink-fg); border-color: var(--ink); }
+.chip input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.submit { width: 100%; font-size: 1.05rem; }
+.submit[disabled] { opacity: .6; cursor: progress; }
+.ok-msg { color: var(--ok); font-weight: 700; margin-bottom: 10px; }
 .hint { color: var(--muted); font-size: 0.88rem; margin-top: 12px; }
 .err { color: #C0392B; font-weight: 600; min-height: 1.5em; margin-bottom: 8px; }
 :root[data-theme="dark"] .err { color: #FF8A7A; }
@@ -200,7 +217,6 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <p class="lead" data-i18n="lead">مكتب MTA العربي بيسجّلك مندوب توصيل مع طلبات. ابعت بياناتك ونتواصل معاك.</p>
         <div class="actions">
           <a class="btn btn-main" href="#apply" data-i18n="cta_apply">قدّم دلوقتي</a>
-          <a class="btn btn-ghost" href="https://wa.me/201551677985" target="_blank" rel="noopener" data-i18n="cta_wa">كلّمنا واتساب</a>
         </div>
       </div>
       <div class="ticket" aria-label="ticket">
@@ -240,7 +256,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <h3 data-i18n="steps_h">إزاي تبدأ</h3>
         <ol class="steps">
           <li data-i18n="s1">املا بياناتك في صفحة التقديم</li>
-          <li data-i18n="s2">ابعتها لنا على واتساب</li>
+          <li data-i18n="s2">دوس "ابعت بياناتي"</li>
           <li data-i18n="s3">هنتواصل معاك ونكمّل الباقي</li>
         </ol>
       </div>
@@ -250,20 +266,57 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
   <section class="page" id="apply" hidden>
     <h2 class="sec-title" data-i18n="ap_h">قدّم دلوقتي</h2>
-    <p class="sec-sub" data-i18n="ap_sub">املا البيانات وهنجهّز لك رسالة واتساب جاهزة للإرسال.</p>
+    <p class="sec-sub" data-i18n="ap_sub">املا بياناتك ودوس إرسال، وهنتواصل معاك.</p>
     <form class="card form-card" id="applyForm" novalidate>
       <div class="field"><label for="fName" data-i18n="f_name">الاسم بالكامل</label><input id="fName" name="name" autocomplete="name"></div>
-      <div class="field"><label for="fPhone" data-i18n="f_phone">رقم الموبايل</label><input id="fPhone" name="phone" inputmode="tel" autocomplete="tel" dir="ltr"></div>
-      <div class="field"><label for="fArea" data-i18n="f_area">المنطقة</label><input id="fArea" name="area" data-i18n-ph="f_area_ph" placeholder="مثال: مدينة نصر، فيصل، الهرم"></div>
-      <div class="field"><label for="fVeh" data-i18n="f_veh">وسيلة التوصيل</label>
-        <select id="fVeh" name="vehicle">
-          <option value="moto" data-i18n="v_moto">موتوسيكل</option>
-          <option value="bike" data-i18n="v_bike">عجلة</option>
-        </select>
+      <div class="field"><label for="fPhone" data-i18n="f_phone">رقم الموبايل</label><input id="fPhone" name="phone" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="01XXXXXXXXX"></div>
+      <div class="two-col">
+        <div class="field"><label for="fGov" data-i18n="f_gov">المحافظة</label>
+          <select id="fGov" name="governorate">
+            <option value="" data-i18n="g_pick">اختار</option>
+            <option value="cairo" data-i18n="g_cairo">القاهرة</option>
+            <option value="giza" data-i18n="g_giza">الجيزة</option>
+            <option value="qal" data-i18n="g_qal">القليوبية</option>
+            <option value="other" data-i18n="g_other">محافظة تانية</option>
+          </select>
+        </div>
+        <div class="field"><label for="fAge" data-i18n="f_age">السن</label><input id="fAge" name="age" inputmode="numeric" maxlength="2" dir="ltr"></div>
       </div>
+      <div class="field"><label for="fArea" data-i18n="f_area">المنطقة اللي ساكن فيها</label><input id="fArea" name="area" data-i18n-ph="f_area_ph" placeholder="مثال: مدينة نصر، فيصل، الهرم"></div>
+
+      <fieldset class="field chips" data-group="vehicle">
+        <legend data-i18n="f_veh">عندك إيه؟</legend>
+        <div class="chip-row">
+          <label class="chip"><input type="radio" name="vehicle" value="moto" checked><span data-i18n="v_moto">موتوسيكل</span></label>
+          <label class="chip"><input type="radio" name="vehicle" value="bike"><span data-i18n="v_bike">عجلة</span></label>
+          <label class="chip"><input type="radio" name="vehicle" value="car"><span data-i18n="v_car">عربية</span></label>
+          <label class="chip"><input type="radio" name="vehicle" value="none"><span data-i18n="v_none">مفيش مركبة</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="field chips" data-group="license">
+        <legend data-i18n="f_lic">عندك رخصة؟</legend>
+        <div class="chip-row">
+          <label class="chip"><input type="radio" name="license" value="yes" checked><span data-i18n="l_yes">أيوه</span></label>
+          <label class="chip"><input type="radio" name="license" value="no"><span data-i18n="l_no">لأ</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="field chips" data-group="experience">
+        <legend data-i18n="f_exp">اشتغلت توصيل قبل كده؟</legend>
+        <div class="chip-row">
+          <label class="chip"><input type="radio" name="experience" value="first" checked><span data-i18n="e_first">أول مرة</span></label>
+          <label class="chip"><input type="radio" name="experience" value="less"><span data-i18n="e_less">أقل من سنة</span></label>
+          <label class="chip"><input type="radio" name="experience" value="more"><span data-i18n="e_more">أكتر من سنة</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field"><label for="fNotes"><span data-i18n="f_notes">ملاحظات</span> <small class="opt" data-i18n="f_opt">(اختياري)</small></label><textarea id="fNotes" name="notes" rows="3"></textarea></div>
+
       <p class="err" id="err" role="alert"></p>
-      <a class="btn btn-main" id="sendWa" href="https://wa.me/201551677985" target="_blank" rel="noopener" data-i18n="f_send">افتح واتساب وابعت</a>
-      <p class="hint" data-i18n="f_hint">الزرار بيفتح واتساب برسالة جاهزة. بياناتك اتسجّلت عندنا، وكمّل إرسال الرسالة على واتساب عشان نتواصل معاك أسرع.</p>
+      <p class="ok-msg" id="okMsg" role="status" hidden></p>
+      <button class="btn btn-main submit" id="sendBtn" type="submit" data-i18n="f_send">ابعت بياناتي</button>
+
       <div class="form-phone">
         <div class="label" data-i18n="f_or">أو كلّمنا مباشرة على رقم المكتب</div>
         <div class="phone" id="phoneText">01551677985</div>
@@ -291,7 +344,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       brand: "MTA العربي", nav_home: "الرئيسية", nav_why: "ليه معانا", nav_apply: "قدّم دلوقتي", nav_contact: "تواصل",
       tag: "تعيين فوري في القاهرة والجيزة", h1a: "انضم لفريق", h1b: "طلبات",
       lead: "مكتب MTA العربي بيسجّلك مندوب توصيل مع طلبات. ابعت بياناتك ونتواصل معاك.",
-      cta_apply: "قدّم دلوقتي", cta_wa: "كلّمنا واتساب",
+      cta_apply: "قدّم دلوقتي",
       t_new: "طلب جديد", t_from: "من", t_office: "مكتب MTA العربي", t_to: "إلى", t_door: "باب العميل",
       t_area: "المنطقة", t_area_v: "القاهرة والجيزة", t_gift: "هدايا البداية", t_gift_v: "شنطة توصيل + تيشيرت",
       t_bonus: "بونص الترحيب", t_bonus_v: "1200 جنيه",
@@ -300,13 +353,16 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       b2_h: "شنطة وتيشيرت مجانًا", b2_p: "شنطة توصيل وتيشيرت هدية لأول 250 طلب تقديم.",
       b3_h: "تعيين فوري", b3_p: "بنوظّف دلوقتي في كل مناطق القاهرة والجيزة.",
       req_h: "المطلوب منك", req1: "عندك موتوسيكل أو عجلة", req2: "ساكن أو شغّال في القاهرة أو الجيزة",
-      steps_h: "إزاي تبدأ", s1: "املا بياناتك في صفحة التقديم", s2: "ابعتها لنا على واتساب", s3: "هنتواصل معاك ونكمّل الباقي",
-      ap_h: "قدّم دلوقتي", ap_sub: "املا البيانات وهنجهّز لك رسالة واتساب جاهزة للإرسال.",
-      f_name: "الاسم بالكامل", f_phone: "رقم الموبايل", f_area: "المنطقة", f_area_ph: "مثال: مدينة نصر، فيصل، الهرم",
-      f_veh: "وسيلة التوصيل", v_moto: "موتوسيكل", v_bike: "عجلة",
-      f_send: "افتح واتساب وابعت", f_hint: "الزرار بيفتح واتساب برسالة جاهزة. بياناتك اتسجّلت عندنا، وكمّل إرسال الرسالة على واتساب عشان نتواصل معاك أسرع.",
+      steps_h: "إزاي تبدأ", s1: "املا بياناتك في صفحة التقديم", s2: "دوس \"ابعت بياناتي\"", s3: "هنتواصل معاك ونكمّل الباقي",
+      ap_h: "قدّم دلوقتي", ap_sub: "املا بياناتك ودوس إرسال، وهنتواصل معاك.",
+      f_name: "الاسم بالكامل", f_phone: "رقم الموبايل", f_gov: "المحافظة", g_pick: "اختار", g_cairo: "القاهرة", g_giza: "الجيزة", g_qal: "القليوبية", g_other: "محافظة تانية",
+      f_age: "السن", f_area: "المنطقة اللي ساكن فيها", f_area_ph: "مثال: مدينة نصر، فيصل، الهرم",
+      f_veh: "عندك إيه؟", v_moto: "موتوسيكل", v_bike: "عجلة", v_car: "عربية", v_none: "مفيش مركبة",
+      f_lic: "عندك رخصة؟", l_yes: "أيوه", l_no: "لأ",
+      f_exp: "اشتغلت توصيل قبل كده؟", e_first: "أول مرة", e_less: "أقل من سنة", e_more: "أكتر من سنة",
+      f_notes: "ملاحظات", f_opt: "(اختياري)",
+      f_send: "ابعت بياناتي", sending: "بنبعت...", sent: "وصلتنا بياناتك. هنتواصل معاك قريب.", fail: "حصلت مشكلة في الإرسال. جرّب تاني أو اتصل بينا.",
       err: "اكتب اسمك ورقم موبايلك الأول.",
-      msg: "أنا عاوز أنضم لفريق طلبات.\nالاسم: {n}\nالموبايل: {p}\nالمنطقة: {a}\nالوسيلة: {v}",
       f_or: "أو كلّمنا مباشرة على رقم المكتب",
       c_call: "اتصل بينا", c_copy: "انسخ الرقم", c_copied: "اتنسخ",
       foot1: "MTA العربي · مكتب مناديب طلبات", foot2: "القاهرة والجيزة", other: "English"
@@ -315,7 +371,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       brand: "MTA Al Araby", nav_home: "Home", nav_why: "Why us", nav_apply: "Apply", nav_contact: "Contact",
       tag: "Hiring now across Cairo & Giza", h1a: "Join the", h1b: "Talabat team",
       lead: "MTA Al Araby office signs you up as a Talabat delivery courier. Send your details and we get back to you.",
-      cta_apply: "Apply now", cta_wa: "WhatsApp us",
+      cta_apply: "Apply now",
       t_new: "New order", t_from: "From", t_office: "MTA Al Araby office", t_to: "To", t_door: "Customer's door",
       t_area: "Area", t_area_v: "Cairo & Giza", t_gift: "Starter gifts", t_gift_v: "Delivery bag + T-shirt",
       t_bonus: "Welcome bonus", t_bonus_v: "1200 EGP",
@@ -324,13 +380,16 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       b2_h: "Free bag and T-shirt", b2_p: "A delivery bag and T-shirt for the first 250 applications.",
       b3_h: "Immediate hiring", b3_p: "We are hiring right now in all areas of Cairo and Giza.",
       req_h: "What you need", req1: "You own a motorcycle or a bicycle", req2: "You live or work in Cairo or Giza",
-      steps_h: "How to start", s1: "Fill in your details on the Apply page", s2: "Send them to us on WhatsApp", s3: "We contact you and finish the rest",
-      ap_h: "Apply now", ap_sub: "Fill in your details and we prepare a WhatsApp message ready to send.",
-      f_name: "Full name", f_phone: "Mobile number", f_area: "Area", f_area_ph: "e.g. Nasr City, Faisal, Haram",
-      f_veh: "Vehicle", v_moto: "Motorcycle", v_bike: "Bicycle",
-      f_send: "Open WhatsApp and send", f_hint: "The button opens WhatsApp with a ready message. Your details are already recorded with us; send the message on WhatsApp so we can reach you faster.",
+      steps_h: "How to start", s1: "Fill in your details on the Apply page", s2: "Press \"Send my details\"", s3: "We contact you and finish the rest",
+      ap_h: "Apply now", ap_sub: "Fill in your details and press send. We will contact you.",
+      f_name: "Full name", f_phone: "Mobile number", f_gov: "Governorate", g_pick: "Select", g_cairo: "Cairo", g_giza: "Giza", g_qal: "Qalyubia", g_other: "Other governorate",
+      f_age: "Age", f_area: "Area where you live", f_area_ph: "e.g. Nasr City, Faisal, Haram",
+      f_veh: "What do you have?", v_moto: "Motorcycle", v_bike: "Bicycle", v_car: "Car", v_none: "No vehicle",
+      f_lic: "Do you have a license?", l_yes: "Yes", l_no: "No",
+      f_exp: "Delivery experience?", e_first: "First time", e_less: "Under 1 year", e_more: "Over 1 year",
+      f_notes: "Notes", f_opt: "(optional)",
+      f_send: "Send my details", sending: "Sending...", sent: "We received your details. We will contact you soon.", fail: "Sending failed. Try again or call us.",
       err: "Enter your name and mobile number first.",
-      msg: "I want to join the Talabat team.\nName: {n}\nMobile: {p}\nArea: {a}\nVehicle: {v}",
       f_or: "Or call us directly on the office number",
       c_call: "Call us", c_copy: "Copy number", c_copied: "Copied",
       foot1: "MTA Al Araby · Talabat courier office", foot2: "Cairo & Giza", other: "العربية"
@@ -353,40 +412,56 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     });
     $("langBtn").textContent = d.other;
     document.title = d.brand;
-    updateWa();
-  }
-
-  function updateWa() {
-    var d = T[lang];
-    var vSel = $("fVeh");
-    var v = vSel.options[vSel.selectedIndex].textContent;
-    var text = d.msg.replace("{n}", $("fName").value.trim()).replace("{p}", $("fPhone").value.trim())
-      .replace("{a}", $("fArea").value.trim()).replace("{v}", v);
-    $("sendWa").href = "https://wa.me/201551677985?text=" + encodeURIComponent(text);
   }
 
   var FORM_URL = "https://formspree.io/f/xzeejygb";
-  var lastSent = "";
-  function sendToFormspree() {
-    var vSel = $("fVeh");
+  var sending = false;
+  function pick(name) {
+    var r = document.querySelector('input[name="' + name + '"]:checked');
+    return r ? r.nextElementSibling.textContent : "";
+  }
+  function arLabel(name) {
+    // always send Arabic labels to Formspree so the inbox is consistent
+    var r = document.querySelector('input[name="' + name + '"]:checked');
+    if (!r) return "";
+    var k = r.nextElementSibling.getAttribute("data-i18n");
+    return T.ar[k] || r.nextElementSibling.textContent;
+  }
+  function submitForm(e) {
+    e.preventDefault();
+    if (sending) return;
+    var d = T[lang], err = $("err"), ok = $("okMsg"), btn = $("sendBtn");
+    ok.hidden = true;
+    if (!$("fName").value.trim() || !$("fPhone").value.trim()) { err.textContent = d.err; return; }
+    err.textContent = "";
+    var gov = $("fGov");
+    var gk = gov.options[gov.selectedIndex].getAttribute("data-i18n");
     var payload = {
       name: $("fName").value.trim(),
       phone: $("fPhone").value.trim(),
+      age: $("fAge").value.trim(),
+      governorate: gov.value ? T.ar[gk] : "",
       area: $("fArea").value.trim(),
-      vehicle: vSel.options[vSel.selectedIndex].textContent,
+      vehicle: arLabel("vehicle"),
+      license: arLabel("license"),
+      experience: arLabel("experience"),
+      notes: $("fNotes").value.trim(),
       language: lang
     };
-    var key = JSON.stringify(payload);
-    if (key === lastSent) return;
-    lastSent = key;
-    try {
-      fetch(FORM_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: key,
-        keepalive: true
-      }).catch(function () { lastSent = ""; });
-    } catch (e) { lastSent = ""; }
+    sending = true; btn.disabled = true; btn.textContent = d.sending;
+    fetch(FORM_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (!r.ok) throw new Error("bad status");
+      ok.textContent = T[lang].sent; ok.hidden = false;
+      $("applyForm").reset();
+    }).catch(function () {
+      err.textContent = T[lang].fail;
+    }).then(function () {
+      sending = false; btn.disabled = false; btn.textContent = T[lang].f_send;
+    });
   }
 
   function route() {
@@ -404,18 +479,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     try { localStorage.setItem("mta-lang", lang); } catch (e) {}
     applyLang();
   });
-  ["fName", "fPhone", "fArea", "fVeh"].forEach(function (id) {
-    $(id).addEventListener("input", updateWa);
-    $(id).addEventListener("change", updateWa);
-  });
-  $("applyForm").addEventListener("submit", function (e) { e.preventDefault(); });
-  $("sendWa").addEventListener("click", function (e) {
-    updateWa();
-    if (!$("fName").value.trim() || !$("fPhone").value.trim()) {
-      e.preventDefault();
-      $("err").textContent = T[lang].err;
-    } else { $("err").textContent = ""; sendToFormspree(); }
-  });
+  $("applyForm").addEventListener("submit", submitForm);
   $("copyBtn").addEventListener("click", function () {
     var btn = this, num = $("phoneText").textContent;
     function done() { btn.textContent = T[lang].c_copied; setTimeout(function () { btn.textContent = T[lang].c_copy; }, 1500); }
