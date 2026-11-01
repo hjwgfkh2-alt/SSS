@@ -1,0 +1,438 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>MTA العربي</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Changa:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Archivo:wght@500;700;800&display=swap">
+<style>
+/* Layout concept: an order ticket / waybill. Pages are tabs; the hero is a perforated delivery slip. */
+:root {
+  --bg: #EDEFEA;
+  --surface: #FFFFFF;
+  --fg: #11181C;
+  --muted: #55606A;
+  --line: #D1D7D0;
+  --accent: #E8540A;
+  --accent-fg: #FFFFFF;
+  --ink: #0F2A2B;
+  --ink-fg: #F1F5F2;
+  --ink-muted: #9FB8B4;
+  --ok: #1E8A5A;
+  --font-display: "Changa", "Archivo", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Archivo", system-ui, sans-serif;
+  --font-latin: "Archivo", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1214; --surface: #151C1F; --fg: #EBF0EE; --muted: #9AA7A5; --line: #29343A;
+    --accent: #FF7A2E; --accent-fg: #1A0B02; --ink: #1B3A3B; --ink-fg: #F1F5F2; --ink-muted: #A9C2BE; --ok: #4CC38A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1214; --surface: #151C1F; --fg: #EBF0EE; --muted: #9AA7A5; --line: #29343A;
+  --accent: #FF7A2E; --accent-fg: #1A0B02; --ink: #1B3A3B; --ink-fg: #F1F5F2; --ink-muted: #A9C2BE; --ok: #4CC38A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.7;
+  padding-inline: 0;
+}
+html[lang="en"] body { font-family: var(--font-latin); line-height: 1.6; }
+.wrap {
+  max-width: 1040px; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; margin: 0; text-wrap: balance; }
+html[lang="en"] h1, html[lang="en"] h2, html[lang="en"] h3 { font-family: var(--font-latin); font-weight: 800; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+/* header */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-block: 10px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+html[lang="en"] .brand { font-family: var(--font-latin); }
+.brand i { width: 14px; height: 14px; background: var(--accent); border-radius: 50%; display: inline-block; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); }
+nav { display: flex; flex-wrap: wrap; gap: 4px; margin-inline-start: auto; }
+nav a {
+  text-decoration: none; padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; color: var(--muted);
+}
+nav a[aria-current="page"] { background: var(--ink); color: var(--ink-fg); }
+nav a:hover { color: var(--fg); }
+nav a[aria-current="page"]:hover { color: var(--ink-fg); }
+.lang {
+  font: inherit; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+  background: transparent; color: var(--fg); border: 1.5px solid var(--line); border-radius: 999px; padding: 5px 14px;
+}
+.lang:hover { border-color: var(--accent); }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
+  padding: 12px 24px; border-radius: 10px; border: 2px solid transparent; min-height: 48px;
+}
+.btn-main { background: var(--accent); color: var(--accent-fg); }
+.btn-main:hover { filter: brightness(1.07); }
+.btn-ghost { border-color: var(--fg); color: var(--fg); background: transparent; }
+.btn-ghost:hover { background: var(--fg); color: var(--bg); }
+
+main { padding-block: 32px 56px; }
+.page[hidden] { display: none !important; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 40px; align-items: center; }
+.tag {
+  display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem;
+  color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); padding: 4px 14px; border-radius: 999px;
+}
+.tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.hero h1 { font-size: clamp(2.4rem, 7vw, 4.2rem); margin-block: 16px 14px; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lead { color: var(--muted); font-size: 1.1rem; max-width: 34rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+/* ticket */
+.ticket { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; position: relative; }
+.ticket-head { background: var(--ink); color: var(--ink-fg); padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ticket-head b { font-family: var(--font-display); font-size: 1.15rem; }
+html[lang="en"] .ticket-head b { font-family: var(--font-latin); }
+.ticket-head span { font-family: var(--font-latin); font-size: 0.85rem; color: var(--ink-muted); letter-spacing: 0.08em; direction: ltr; }
+.route { display: flex; align-items: center; gap: 10px; padding: 20px 22px 8px; }
+.route .dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent); flex: none; }
+.route .dot.end { background: var(--accent); }
+.route .line { flex: 1; border-top: 3px dotted var(--line); min-width: 20px; }
+.route-labels { display: flex; justify-content: space-between; gap: 12px; padding: 0 22px 18px; font-weight: 600; }
+.route-labels small { display: block; color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+.perf { border-top: 2px dashed var(--line); position: relative; margin-block: 2px; }
+.perf::before, .perf::after { content: ""; position: absolute; top: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); }
+.perf::before { inset-inline-start: -11px; }
+.perf::after { inset-inline-end: -11px; }
+.rows { padding: 14px 22px 20px; display: grid; gap: 12px; }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.row:last-child { border-bottom: 0; padding-bottom: 0; }
+.row span { color: var(--muted); font-size: 0.92rem; }
+.row b { font-weight: 600; text-align: end; }
+.row b.big { font-family: var(--font-display); font-size: 1.5rem; color: var(--accent); }
+html[lang="en"] .row b.big { font-family: var(--font-latin); font-weight: 800; }
+
+/* sections */
+.sec-title { font-size: clamp(1.8rem, 5vw, 2.6rem); margin-bottom: 8px; }
+.sec-sub { color: var(--muted); max-width: 38rem; margin-bottom: 28px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 22px; min-width: 0; }
+.card .num { font-family: var(--font-display); font-size: 2.6rem; color: var(--accent); line-height: 1; margin-bottom: 10px; display: block; }
+html[lang="en"] .card .num { font-family: var(--font-latin); font-weight: 800; }
+.card h3 { font-size: 1.2rem; margin-bottom: 6px; }
+.card p { color: var(--muted); font-size: 0.97rem; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+.two h3 { font-size: 1.15rem; margin-bottom: 12px; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.checks li { display: flex; gap: 10px; align-items: flex-start; }
+.checks li::before { content: ""; flex: none; width: 20px; height: 20px; margin-top: 5px; border-radius: 50%; background: var(--ok); mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: s; }
+.steps li { counter-increment: s; display: flex; gap: 14px; align-items: flex-start; }
+.steps li::before { content: counter(s); flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--ink-fg); display: grid; place-items: center; font-family: var(--font-latin); font-weight: 700; }
+
+/* form */
+.form-card { max-width: 560px; }
+.field { display: grid; gap: 6px; margin-bottom: 16px; }
+.field label { font-weight: 600; font-size: 0.95rem; }
+.field input, .field select {
+  font: inherit; color: var(--fg); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 14px; min-height: 48px; width: 100%;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.hint { color: var(--muted); font-size: 0.88rem; margin-top: 12px; }
+.err { color: #C0392B; font-weight: 600; min-height: 1.5em; margin-bottom: 8px; }
+:root[data-theme="dark"] .err { color: #FF8A7A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .err { color: #FF8A7A; } }
+
+/* contact */
+.phone { font-family: var(--font-latin); font-weight: 800; font-size: clamp(2rem, 8vw, 3.4rem); letter-spacing: 0.02em; direction: ltr; unicode-bidi: isolate; user-select: all; word-break: break-all; }
+.form-phone { margin-top: 22px; padding-top: 20px; border-top: 2px dashed var(--line); }
+.form-phone .label { color: var(--muted); font-size: 0.92rem; margin-bottom: 4px; }
+.form-phone .phone { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+.form-phone .actions { margin-top: 14px; }
+.contact-box { background: var(--ink); color: var(--ink-fg); border-radius: 14px; padding: 28px; }
+.contact-box .label { color: var(--ink-muted); font-size: 0.9rem; }
+.contact-box .actions .btn-ghost { border-color: var(--ink-fg); color: var(--ink-fg); }
+.contact-box .actions .btn-ghost:hover { background: var(--ink-fg); color: var(--ink); }
+
+footer { border-top: 1px solid var(--line); padding-block: 22px; color: var(--muted); font-size: 0.9rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; gap: 28px; }
+  nav { margin-inline-start: 0; width: 100%; order: 3; }
+  .lang { margin-inline-start: auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .page:not([hidden]) { animation: rise .35s ease-out both; }
+  @keyframes rise { from { opacity: .001; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home"><i></i><span data-i18n="brand">MTA العربي</span></a>
+    <nav aria-label="main">
+      <a href="#home" data-i18n="nav_home">الرئيسية</a>
+      <a href="#why" data-i18n="nav_why">ليه معانا</a>
+      <a href="#apply" data-i18n="nav_apply">قدّم دلوقتي</a>
+    </nav>
+    <button class="lang" id="langBtn" type="button">English</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="page" id="home">
+    <div class="hero">
+      <div>
+        <span class="tag" data-i18n="tag">تعيين فوري في القاهرة والجيزة</span>
+        <h1><span data-i18n="h1a">انضم لفريق</span> <em data-i18n="h1b">طلبات</em></h1>
+        <p class="lead" data-i18n="lead">مكتب MTA العربي بيسجّلك مندوب توصيل مع طلبات. ابعت بياناتك ونتواصل معاك.</p>
+        <div class="actions">
+          <a class="btn btn-main" href="#apply" data-i18n="cta_apply">قدّم دلوقتي</a>
+          <a class="btn btn-ghost" href="https://wa.me/201551677985" target="_blank" rel="noopener" data-i18n="cta_wa">كلّمنا واتساب</a>
+        </div>
+      </div>
+      <div class="ticket" aria-label="ticket">
+        <div class="ticket-head"><b data-i18n="t_new">طلب جديد</b><span>MTA · TALABAT</span></div>
+        <div class="route"><span class="dot"></span><span class="line"></span><span class="dot end"></span></div>
+        <div class="route-labels">
+          <div><small data-i18n="t_from">من</small><span data-i18n="t_office">مكتب MTA العربي</span></div>
+          <div style="text-align:end"><small data-i18n="t_to">إلى</small><span data-i18n="t_door">باب العميل</span></div>
+        </div>
+        <div class="perf"></div>
+        <div class="rows">
+          <div class="row"><span data-i18n="t_area">المنطقة</span><b data-i18n="t_area_v">القاهرة والجيزة</b></div>
+          <div class="row"><span data-i18n="t_gift">هدايا البداية</span><b data-i18n="t_gift_v">شنطة توصيل + تيشيرت</b></div>
+          <div class="row"><span data-i18n="t_bonus">بونص الترحيب</span><b class="big" data-i18n="t_bonus_v">1200 جنيه</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="why" hidden>
+    <h2 class="sec-title" data-i18n="why_h">ليه تشتغل معانا</h2>
+    <p class="sec-sub" data-i18n="why_sub">بتسجّل مندوب توصيل مع طلبات من خلال مكتبنا، وبتبدأ ببونص وهدايا.</p>
+    <div class="grid3">
+      <div class="card"><span class="num">1200</span><h3 data-i18n="b1_h">بونص ترحيب</h3><p data-i18n="b1_p">1200 جنيه لكل مندوب جديد بيسجّل معانا.</p></div>
+      <div class="card"><span class="num">250</span><h3 data-i18n="b2_h">شنطة وتيشيرت مجانًا</h3><p data-i18n="b2_p">شنطة توصيل وتيشيرت هدية لأول 250 طلب تقديم.</p></div>
+      <div class="card"><span class="num">24</span><h3 data-i18n="b3_h">تعيين فوري</h3><p data-i18n="b3_p">بنوظّف دلوقتي في كل مناطق القاهرة والجيزة.</p></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h3 data-i18n="req_h">المطلوب منك</h3>
+        <ul class="checks">
+          <li data-i18n="req1">عندك موتوسيكل أو عجلة</li>
+          <li data-i18n="req2">ساكن أو شغّال في القاهرة أو الجيزة</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 data-i18n="steps_h">إزاي تبدأ</h3>
+        <ol class="steps">
+          <li data-i18n="s1">املا بياناتك في صفحة التقديم</li>
+          <li data-i18n="s2">ابعتها لنا على واتساب</li>
+          <li data-i18n="s3">هنتواصل معاك ونكمّل الباقي</li>
+        </ol>
+      </div>
+    </div>
+    <div class="actions"><a class="btn btn-main" href="#apply" data-i18n="cta_apply">قدّم دلوقتي</a></div>
+  </section>
+
+  <section class="page" id="apply" hidden>
+    <h2 class="sec-title" data-i18n="ap_h">قدّم دلوقتي</h2>
+    <p class="sec-sub" data-i18n="ap_sub">املا البيانات وهنجهّز لك رسالة واتساب جاهزة للإرسال.</p>
+    <form class="card form-card" id="applyForm" novalidate>
+      <div class="field"><label for="fName" data-i18n="f_name">الاسم بالكامل</label><input id="fName" name="name" autocomplete="name"></div>
+      <div class="field"><label for="fPhone" data-i18n="f_phone">رقم الموبايل</label><input id="fPhone" name="phone" inputmode="tel" autocomplete="tel" dir="ltr"></div>
+      <div class="field"><label for="fArea" data-i18n="f_area">المنطقة</label><input id="fArea" name="area" data-i18n-ph="f_area_ph" placeholder="مثال: مدينة نصر، فيصل، الهرم"></div>
+      <div class="field"><label for="fVeh" data-i18n="f_veh">وسيلة التوصيل</label>
+        <select id="fVeh" name="vehicle">
+          <option value="moto" data-i18n="v_moto">موتوسيكل</option>
+          <option value="bike" data-i18n="v_bike">عجلة</option>
+        </select>
+      </div>
+      <p class="err" id="err" role="alert"></p>
+      <a class="btn btn-main" id="sendWa" href="https://wa.me/201551677985" target="_blank" rel="noopener" data-i18n="f_send">افتح واتساب وابعت</a>
+      <p class="hint" data-i18n="f_hint">الزرار بيفتح واتساب برسالة جاهزة. بياناتك اتسجّلت عندنا، وكمّل إرسال الرسالة على واتساب عشان نتواصل معاك أسرع.</p>
+      <div class="form-phone">
+        <div class="label" data-i18n="f_or">أو كلّمنا مباشرة على رقم المكتب</div>
+        <div class="phone" id="phoneText">01551677985</div>
+        <div class="actions">
+          <a class="btn btn-ghost" href="tel:+201551677985" data-i18n="c_call">اتصل بينا</a>
+          <button class="btn btn-ghost" type="button" id="copyBtn" data-i18n="c_copy">انسخ الرقم</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span data-i18n="foot1">MTA العربي · مكتب مناديب طلبات</span>
+    <span data-i18n="foot2">القاهرة والجيزة</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var T = {
+    ar: {
+      brand: "MTA العربي", nav_home: "الرئيسية", nav_why: "ليه معانا", nav_apply: "قدّم دلوقتي", nav_contact: "تواصل",
+      tag: "تعيين فوري في القاهرة والجيزة", h1a: "انضم لفريق", h1b: "طلبات",
+      lead: "مكتب MTA العربي بيسجّلك مندوب توصيل مع طلبات. ابعت بياناتك ونتواصل معاك.",
+      cta_apply: "قدّم دلوقتي", cta_wa: "كلّمنا واتساب",
+      t_new: "طلب جديد", t_from: "من", t_office: "مكتب MTA العربي", t_to: "إلى", t_door: "باب العميل",
+      t_area: "المنطقة", t_area_v: "القاهرة والجيزة", t_gift: "هدايا البداية", t_gift_v: "شنطة توصيل + تيشيرت",
+      t_bonus: "بونص الترحيب", t_bonus_v: "1200 جنيه",
+      why_h: "ليه تشتغل معانا", why_sub: "بتسجّل مندوب توصيل مع طلبات من خلال مكتبنا، وبتبدأ ببونص وهدايا.",
+      b1_h: "بونص ترحيب", b1_p: "1200 جنيه لكل مندوب جديد بيسجّل معانا.",
+      b2_h: "شنطة وتيشيرت مجانًا", b2_p: "شنطة توصيل وتيشيرت هدية لأول 250 طلب تقديم.",
+      b3_h: "تعيين فوري", b3_p: "بنوظّف دلوقتي في كل مناطق القاهرة والجيزة.",
+      req_h: "المطلوب منك", req1: "عندك موتوسيكل أو عجلة", req2: "ساكن أو شغّال في القاهرة أو الجيزة",
+      steps_h: "إزاي تبدأ", s1: "املا بياناتك في صفحة التقديم", s2: "ابعتها لنا على واتساب", s3: "هنتواصل معاك ونكمّل الباقي",
+      ap_h: "قدّم دلوقتي", ap_sub: "املا البيانات وهنجهّز لك رسالة واتساب جاهزة للإرسال.",
+      f_name: "الاسم بالكامل", f_phone: "رقم الموبايل", f_area: "المنطقة", f_area_ph: "مثال: مدينة نصر، فيصل، الهرم",
+      f_veh: "وسيلة التوصيل", v_moto: "موتوسيكل", v_bike: "عجلة",
+      f_send: "افتح واتساب وابعت", f_hint: "الزرار بيفتح واتساب برسالة جاهزة. بياناتك اتسجّلت عندنا، وكمّل إرسال الرسالة على واتساب عشان نتواصل معاك أسرع.",
+      err: "اكتب اسمك ورقم موبايلك الأول.",
+      msg: "أنا عاوز أنضم لفريق طلبات.\nالاسم: {n}\nالموبايل: {p}\nالمنطقة: {a}\nالوسيلة: {v}",
+      f_or: "أو كلّمنا مباشرة على رقم المكتب",
+      c_call: "اتصل بينا", c_copy: "انسخ الرقم", c_copied: "اتنسخ",
+      foot1: "MTA العربي · مكتب مناديب طلبات", foot2: "القاهرة والجيزة", other: "English"
+    },
+    en: {
+      brand: "MTA Al Araby", nav_home: "Home", nav_why: "Why us", nav_apply: "Apply", nav_contact: "Contact",
+      tag: "Hiring now across Cairo & Giza", h1a: "Join the", h1b: "Talabat team",
+      lead: "MTA Al Araby office signs you up as a Talabat delivery courier. Send your details and we get back to you.",
+      cta_apply: "Apply now", cta_wa: "WhatsApp us",
+      t_new: "New order", t_from: "From", t_office: "MTA Al Araby office", t_to: "To", t_door: "Customer's door",
+      t_area: "Area", t_area_v: "Cairo & Giza", t_gift: "Starter gifts", t_gift_v: "Delivery bag + T-shirt",
+      t_bonus: "Welcome bonus", t_bonus_v: "1200 EGP",
+      why_h: "Why work with us", why_sub: "You register as a Talabat courier through our office and start with a bonus and gifts.",
+      b1_h: "Welcome bonus", b1_p: "1200 EGP for every new courier who signs up with us.",
+      b2_h: "Free bag and T-shirt", b2_p: "A delivery bag and T-shirt for the first 250 applications.",
+      b3_h: "Immediate hiring", b3_p: "We are hiring right now in all areas of Cairo and Giza.",
+      req_h: "What you need", req1: "You own a motorcycle or a bicycle", req2: "You live or work in Cairo or Giza",
+      steps_h: "How to start", s1: "Fill in your details on the Apply page", s2: "Send them to us on WhatsApp", s3: "We contact you and finish the rest",
+      ap_h: "Apply now", ap_sub: "Fill in your details and we prepare a WhatsApp message ready to send.",
+      f_name: "Full name", f_phone: "Mobile number", f_area: "Area", f_area_ph: "e.g. Nasr City, Faisal, Haram",
+      f_veh: "Vehicle", v_moto: "Motorcycle", v_bike: "Bicycle",
+      f_send: "Open WhatsApp and send", f_hint: "The button opens WhatsApp with a ready message. Your details are already recorded with us; send the message on WhatsApp so we can reach you faster.",
+      err: "Enter your name and mobile number first.",
+      msg: "I want to join the Talabat team.\nName: {n}\nMobile: {p}\nArea: {a}\nVehicle: {v}",
+      f_or: "Or call us directly on the office number",
+      c_call: "Call us", c_copy: "Copy number", c_copied: "Copied",
+      foot1: "MTA Al Araby · Talabat courier office", foot2: "Cairo & Giza", other: "العربية"
+    }
+  };
+  var lang = "ar";
+  try { var s = localStorage.getItem("mta-lang"); if (s === "en" || s === "ar") lang = s; } catch (e) {}
+
+  function $(id) { return document.getElementById(id); }
+
+  function applyLang() {
+    var d = T[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n"); if (d[k] != null) el.textContent = d[k];
+    });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n-ph"); if (d[k] != null) el.setAttribute("placeholder", d[k]);
+    });
+    $("langBtn").textContent = d.other;
+    document.title = d.brand;
+    updateWa();
+  }
+
+  function updateWa() {
+    var d = T[lang];
+    var vSel = $("fVeh");
+    var v = vSel.options[vSel.selectedIndex].textContent;
+    var text = d.msg.replace("{n}", $("fName").value.trim()).replace("{p}", $("fPhone").value.trim())
+      .replace("{a}", $("fArea").value.trim()).replace("{v}", v);
+    $("sendWa").href = "https://wa.me/201551677985?text=" + encodeURIComponent(text);
+  }
+
+  var FORM_URL = "https://formspree.io/f/xzeejygb";
+  var lastSent = "";
+  function sendToFormspree() {
+    var vSel = $("fVeh");
+    var payload = {
+      name: $("fName").value.trim(),
+      phone: $("fPhone").value.trim(),
+      area: $("fArea").value.trim(),
+      vehicle: vSel.options[vSel.selectedIndex].textContent,
+      language: lang
+    };
+    var key = JSON.stringify(payload);
+    if (key === lastSent) return;
+    lastSent = key;
+    try {
+      fetch(FORM_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: key,
+        keepalive: true
+      }).catch(function () { lastSent = ""; });
+    } catch (e) { lastSent = ""; }
+  }
+
+  function route() {
+    var id = (location.hash || "#home").slice(1);
+    if (!$(id) || !$(id).classList.contains("page")) id = "home";
+    document.querySelectorAll(".page").forEach(function (p) { p.hidden = p.id !== id; });
+    document.querySelectorAll("nav a").forEach(function (a) {
+      if (a.getAttribute("href") === "#" + id) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    window.scrollTo(0, 0);
+  }
+
+  $("langBtn").addEventListener("click", function () {
+    lang = lang === "ar" ? "en" : "ar";
+    try { localStorage.setItem("mta-lang", lang); } catch (e) {}
+    applyLang();
+  });
+  ["fName", "fPhone", "fArea", "fVeh"].forEach(function (id) {
+    $(id).addEventListener("input", updateWa);
+    $(id).addEventListener("change", updateWa);
+  });
+  $("applyForm").addEventListener("submit", function (e) { e.preventDefault(); });
+  $("sendWa").addEventListener("click", function (e) {
+    updateWa();
+    if (!$("fName").value.trim() || !$("fPhone").value.trim()) {
+      e.preventDefault();
+      $("err").textContent = T[lang].err;
+    } else { $("err").textContent = ""; sendToFormspree(); }
+  });
+  $("copyBtn").addEventListener("click", function () {
+    var btn = this, num = $("phoneText").textContent;
+    function done() { btn.textContent = T[lang].c_copied; setTimeout(function () { btn.textContent = T[lang].c_copy; }, 1500); }
+    try {
+      navigator.clipboard.writeText(num).then(done, function () {
+        var r = document.createRange(); r.selectNodeContents($("phoneText"));
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      });
+    } catch (err) {
+      var r = document.createRange(); r.selectNodeContents($("phoneText"));
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    }
+  });
+  window.addEventListener("hashchange", route);
+  applyLang();
+  route();
+})();
+</script>
+
+</body></html>
